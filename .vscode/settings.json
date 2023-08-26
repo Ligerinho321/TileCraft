@@ -1,0 +1,24 @@
+{
+    "files.associations": {
+        "wproject.h": "c",
+        "utils.h": "c",
+        "typeinfo": "c",
+        "wcamadas.h": "c",
+        "wfile.h": "c",
+        "wmenu.h": "c",
+        "wblocos.h": "c",
+        "wsetting.h": "c",
+        "wcreate.h": "c",
+        "string_utils.h": "c",
+        "switch_color_utils.h": "c",
+        "window_tiles.h": "c",
+        "window_map.h": "c",
+        "array": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "surface_utils.h": "c",
+        "window_settings.h": "c",
+        "window_edit.h": "c",
+        "window_map_utils.h": "c"
+    }
+}
