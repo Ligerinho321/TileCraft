@@ -62,6 +62,8 @@ typedef struct diretorio{
     char name[MAX_STRING];
     char tipo[MAX_STRING];
     Bool selected;
+    Bool clicked;
+    int time;
     struct diretorio *next;
 }Diretorio;
 
