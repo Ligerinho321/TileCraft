@@ -170,6 +170,8 @@ void directCreate(Window_File *window_file,struct dirent *file,Diretorio **aux,i
 
     Diretorio *diretorio = calloc(1,sizeof(Diretorio));
     diretorio->next = NULL;
+    diretorio->clicked = false;
+    diretorio->time = 0;
 
     if(file->d_type == DT_DIR){
         strncpy(diretorio->tipo,"diretorio",MAX_STRING-1);
@@ -506,42 +508,49 @@ void file_input(Data *data){
         }
     }
 
-    if(data->event->type == SDL_MOUSEBUTTONDOWN && data->event->button.button == SDL_BUTTON_LEFT && data->event->button.clicks == 2){
+    if(data->event->type == SDL_MOUSEBUTTONDOWN && data->event->button.button == SDL_BUTTON_LEFT){
 
         if(collidePoint(data->mouse,&window_file->subRect)){
             Diretorio *current = window_file->diretorios;
             while(current != NULL){
-                
-                if(collidePointOffset(data->mouse,&current->rect,0,window_file->verticalScrollBar.offset,&window_file->subRect)){
 
-                    //open directory
-                    if(!strcmp(current->tipo,"diretorio")){
-                        cd(window_file,current->name);
-                        break;
+                if(collidePointOffset(data->mouse,&current->rect,0,window_file->verticalScrollBar.offset,&window_file->subRect)){
+                    
+                    if(current->clicked && SDL_GetTicks() - current->time <= COLLDOWN_DOUBLE_CLICK){
+                        current->clicked = false;
+                        
+                        //open directory
+                        if(!strcmp(current->tipo,"diretorio")){
+                            cd(window_file,current->name);
+                            break;
+                        }
+                        else{
+                            //select img tile set
+                            if(window_file->modo == MOD_SELECTION_IMG_TILE_SET){
+                                selection_img_tile_set(data,current->name);
+                            }
+                            //selection img tile
+                            else if(window_file->modo == MOD_SELECTION_IMG_TILE){
+                                selection_img_tile(data,current->name);
+                                break;
+                            }
+                            //open file (map or blocos)
+                            else if(window_file->modo == MOD_SELECTION_FILE){
+                                selection_file(data,current->name);
+                                break;
+                            }
+                        }
                     }
                     else{
-                        //select img tile set
-                        if(window_file->modo == MOD_SELECTION_IMG_TILE_SET){
-                            selection_img_tile_set(data,current->name);
-                        }
-                        //selection img tile
-                        if(window_file->modo == MOD_SELECTION_IMG_TILE){
-                            selection_img_tile(data,current->name);
-                            break;
-                        }
-                        //open file (map or blocos)
-                        else if(window_file->modo == MOD_SELECTION_FILE){
-                            selection_file(data,current->name);
-                            break;
-                        }
+                        current->clicked = true;
                     }
+                    current->time = SDL_GetTicks();
                 }
+
                 current = current->next;
             }
         }
-    }
-    else if(data->event->type == SDL_MOUSEBUTTONDOWN && data->event->button.button == SDL_BUTTON_LEFT && data->event->button.clicks == 1){
-        
+
         if(collidePoint(data->mouse,&window_file->verticalScrollBar.subRect) && window_file->verticalScrollBar.visible){
             window_file->verticalScrollBar.on_bar = true;
             window_file->verticalScrollBar.mouseDiff = data->mouse->pos_y - window_file->verticalScrollBar.subRect.y;
